@@ -1,20 +1,14 @@
-import { useState, useEffect, use } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import Notification from './components/Notification'
+import BlogForm from './components/BlogForm'
+import Togglable from './components/Togglable'
 import Error from './components/Error'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import login from './services/login'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-
-  const [newBlog, setNewBlog] = useState({
-    title: '',
-    author: '',
-    url: '',
-    likes: 0
-  })
 
   const [username, setUsername] = useState('')
 
@@ -41,12 +35,38 @@ const App = () => {
     }
   }, [])
 
-  const handleBlogChange = (event) => {
-    const { name, value } = event.target
-    setNewBlog({
-      ...newBlog,
-      [name]: value
-    })
+  const handleLikes = async (id, blogObject) => {
+    try {
+      const updatedBlog = await blogService.put(blogObject, id)
+      setBlogs(blogs.map(b => b.id === id ? updatedBlog : b))
+    }
+    catch (exception) {
+      setErrorMessage('Error updating likes')
+      setTimeout(() => setErrorMessage(null), 5000)
+    }
+  }
+
+  const blogFormRef = useRef()
+
+  const blogForm = () => (
+    <Togglable buttonLabel1='new Blog' buttonLabel2='cancel' ref={blogFormRef}>
+      <BlogForm createBlog={addBlog} />
+    </Togglable>
+  )
+
+  const addBlog = (blogObject) => {
+    blogFormRef.current.toggleVisibility()
+    blogService
+      .create(blogObject)
+      .then(returnedBlog => {
+        setBlogs(blogs.concat(returnedBlog))
+        setNotificationMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
+        setTimeout(() => setNotificationMessage(null), 5000)
+      })
+      .catch(error => {
+        setErrorMessage('Failed to create blog')
+        setTimeout(() => setErrorMessage(null), 5000)
+      })
   }
 
   const handleLogin = async (event) => {
@@ -117,66 +137,6 @@ const App = () => {
     </button>
   )
 
-  const addBlog = (event) => {
-    event.preventDefault()
-
-    blogService
-      .create(newBlog)
-      .then(returnedBlog => {
-        setBlogs(blogs.concat(returnedBlog))
-        setNewBlog({ title: '', author: '', url: '', likes: 0 })
-        setNotificationMessage(`A new blog ${returnedBlog.title} by ${returnedBlog.author} added`)
-        setTimeout(() => setNotificationMessage(null), 5000)
-      })
-      .catch(error => {
-        setErrorMessage('Failed to create blog')
-        setTimeout(() => setErrorMessage(null), 5000)
-      })
-  }
-
-  const blogForm = () => (
-    <form onSubmit={addBlog}>
-      <div>
-        title:
-        <input
-          name='title'
-          value={newBlog.title}
-          onChange={handleBlogChange}
-        />
-
-      </div>
-
-      <div>
-        url:
-        <input
-          name='url'
-          value={newBlog.url}
-          onChange={handleBlogChange}
-        />
-      </div>
-
-      <div>
-        author:
-        <input
-          name='author'
-          value={newBlog.author}
-          onChange={handleBlogChange}
-        />
-      </div>
-
-      <div>
-        likes:
-        <input
-          name='likes'
-          value={newBlog.likes}
-          onChange={handleBlogChange}
-        />
-      </div>
-
-      <button type="submit">save</button>
-    </form>
-  )
-
   if (user == null) {
     return (
       <div>
@@ -195,8 +155,8 @@ const App = () => {
       <Notification message={notificationMessage} />
       {logoutButton()}
       {blogForm()}
-      {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+      {blogs.sort((a, b) => a.likes - b.likes).map(blog =>
+        <Blog key={blog.id} blog={blog} updateLikes={handleLikes} />
       )}
     </div>
   )

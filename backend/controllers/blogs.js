@@ -9,6 +9,18 @@ blogsRouter.get('/', async (request, response) => {
     response.json(blogs)
 })
 
+blogsRouter.get('/:id', async (request, response) => {
+    const blog = await Blog
+        .findById(request.params.id)
+        .populate('user', { username: 1, name: 1 })
+
+    if (blog) {
+        response.json(blog)
+    } else {
+        response.status(404).end()
+    }
+})
+
 blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
     const body = request.body
 
@@ -57,13 +69,16 @@ blogsRouter.delete('/:id', middleware.userExtractor, async (request, response) =
 blogsRouter.put('/:id', async (request, response) => {
     const body = request.body
     const blog = {
+        user: body.user,
         title: body.title,
         author: body.author,
         url: body.url,
         likes: body.likes
     }
 
-    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true, runValidators: true, context: 'query' })
+    const updatedBlog = await Blog
+        .findByIdAndUpdate(request.params.id, blog, { new: true, runValidators: true, context: 'query' })
+        .populate('user', { username: 1, name: 1 })
     if (updatedBlog)
         response.status(200).json(updatedBlog.toJSON())
     else
