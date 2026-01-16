@@ -46,6 +46,19 @@ const App = () => {
     }
   }
 
+  const deleteBlog = async (blog) => {
+    try {
+      const deletedBlog = await blogService.deleteBlog(blog.id)
+      setBlogs(blogs.filter(b => b.id !== blog.id))
+      setNotificationMessage(`${blog.title} by ${blog.author} was removed`)
+      setTimeout(() => setNotificationMessage(null), 5000)
+    }
+    catch (exception) {
+      setErrorMessage('Error deleting Blog')
+      setTimeout(() => setErrorMessage(null), 5000)
+    }
+  }
+
   const blogFormRef = useRef()
 
   const blogForm = () => (
@@ -155,8 +168,8 @@ const App = () => {
       <Notification message={notificationMessage} />
       {logoutButton()}
       {blogForm()}
-      {blogs.sort((a, b) => a.likes - b.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} updateLikes={handleLikes} />
+      {[...blogs].sort((a, b) => b.likes - a.likes).map(blog =>
+        <Blog key={blog.id} blog={blog} updateLikes={handleLikes} user={user} deleteBlog={deleteBlog} />
       )}
     </div>
   )
