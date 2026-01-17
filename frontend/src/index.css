@@ -42,6 +42,28 @@
     font-size: 14px;
 }
 
+.new-account-button {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: transparent;
+    color: #061493;
+    border: 2px solid #061493;
+    border-radius: 50px;
+    font-family: sans-serif;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+}
+
+.new-account-button:hover {
+    background-color: #061493;
+    color: white;
+    box-shadow: 0 4px 12px rgba(23, 19, 255, 0.3);
+}
+
+
 .login-button:hover {
     background-color: #096e04;
     color: white;

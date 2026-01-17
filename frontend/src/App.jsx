@@ -6,6 +6,7 @@ import Togglable from './components/Togglable'
 import Error from './components/Error'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import userService from './services/users'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -19,6 +20,12 @@ const App = () => {
   const [errorMessage, setErrorMessage] = useState(null)
 
   const [notificationMessage, setNotificationMessage] = useState(null)
+
+  const [newName, setNewName] = useState('')
+
+  const [newUsername, setNewUsername] = useState('')
+
+  const [newPassword, setNewPassword] = useState('')
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -82,6 +89,44 @@ const App = () => {
       })
   }
 
+  const handleCreateAccount = async (event) => {
+    event.preventDefault()
+
+    try {
+      const newUser = {
+        name: newName,
+        username: newUsername,
+        password: newPassword,
+      }
+
+      const savedUser = await userService.create(newUser)
+
+      setNewName('')
+      setNewUsername('')
+      setNewPassword('')
+
+      setNotificationMessage(`${savedUser.name} registered!`)
+      setTimeout(() => {
+        setNotificationMessage(null)
+      }, 5000)
+    }
+    catch (exception) {
+      setNewName('')
+      setNewUsername('')
+      setNewPassword('')
+
+      const message = exception.response?.data?.error || 'Something went Worng'
+
+      setErrorMessage(`${message}`)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
+  }
+
+
+
+
   const handleLogin = async (event) => {
     event.preventDefault()
 
@@ -111,6 +156,41 @@ const App = () => {
       }, 5000)
     }
   }
+
+  const createAccountForm = () => (
+    <form onSubmit={handleCreateAccount}>
+      <div>
+        Name
+        <input type="text"
+          value={newName}
+          name='Name'
+          onChange={({ target }) => setNewName(target.value)}
+        />
+      </div>
+      <div>
+        Username
+        <input type="text"
+          value={newUsername}
+          name='Username'
+          onChange={({ target }) => setNewUsername(target.value)}
+        />
+      </div>
+      <div>
+        Password
+        <input type="password"
+          value={newPassword}
+          name='Password'
+          autoComplete="on"
+          onChange={({ target }) => setNewPassword(target.value)}
+        />
+      </div>
+
+      <button type='submit' className='new-account-button'>Create Account</button>
+
+    </form>
+  )
+
+
 
   const loginForm = () => (
     <form onSubmit={handleLogin}>
@@ -153,11 +233,18 @@ const App = () => {
   if (user == null) {
     return (
       <div>
-        <h2>Log in to application</h2>
-        <Error message={errorMessage} />
+        <Notification message={notificationMessage} />
+        <div>
+          <h2>Log in to application</h2>
+          <Error message={errorMessage} />
 
-        {loginForm()}
+          {loginForm()}
+        </div>
 
+        <div>
+          <h2>Create Account</h2>
+          {createAccountForm()}
+        </div>
       </div>
     )
   }
