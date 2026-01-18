@@ -22,14 +22,27 @@ Esta é uma aplicação Full Stack desenvolvida como parte do curso Full Stack O
 
  - Bcrypt: Para hashing seguro de senhas no banco de dados.
 
-**A API segue os padrões RESTful e exige autenticação via Header Authorization para operações de escrita:**
- - GET /api/blogs: Retorna todos os blogs.
+**Rotas da API:**
+A API segue os padrões RESTful.
 
- - POST /api/blogs: Cria um novo blog (Requer Token).
+Autenticação (Login):
+ - POST /api/login: Autentica um usuário e retorna um token JWT válido por 1 hora.
 
- - PUT /api/blogs/:id: Atualiza dados de um blog (ex: adicionar likes).
+Usuários:
+ - GET /api/users: Lista todos os usuários e seus respectivos blogs postados.
 
- - DELETE /api/blogs/:id: Remove um blog (Requer Token e validação de dono).
+ - POST /api/users: Cria um novo usuário. 
+
+Blogs:
+ - GET /api/blogs: Retorna todos os blogs, incluindo os dados básicos do usuário que o postou.
+
+ - GET /api/blogs/:id: Retorna os detalhes de um blog específico.
+
+ - POST /api/blogs: Cria um novo blog (Requer Token de autenticação).
+
+ - PUT /api/blogs/:id: Atualiza dados de um blog, como a contagem de likes.
+
+ - DELETE /api/blogs/:id: Remove um blog (Requer Token e apenas o dono do blog pode deletá-lo).
 
 **Testes de Integração:**
 O projeto possui uma suíte de testes para o backend utilizando Supertest e Jest. Os testes cobrem:
