@@ -32,7 +32,7 @@ blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
 
     const blog = new Blog({
         title: body.title,
-        author: body.author || "anonymous",
+        author: body.author || "Anonymous",
         url: body.url,
         likes: body.likes || 0,
         user: user.id
