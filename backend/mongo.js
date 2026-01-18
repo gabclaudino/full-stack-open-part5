@@ -31,20 +31,13 @@ blogSchema.set('toJSON', {
 const Blog = mongoose.model('Blog', blogSchema)
 
 const blog = new Blog({
-    title: "boa noite!!!!!",
+    title: "Test Blog1",
     author: "Gabriel Claudino de Souza",
-    url: "www.gabizaoA-LENDA.com",
-    likes: 1111
+    url: "https://www.gabriel.com",
+    likes: 110
 })
 
 blog.save().then(result => {
     console.log('blog post saved!')
     mongoose.connection.close()
 })
-
-// Note.find({}).then(result => {
-//     result.forEach(note => {
-//         console.log(note)
-//     })
-//     mongoose.connection.close()
-// })
