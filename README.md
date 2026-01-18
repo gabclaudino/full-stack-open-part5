@@ -52,10 +52,10 @@ O projeto possui uma suíte de testes robusta para o backend utilizando Supertes
     `npm install`
 
 3. Configure as variáveis de ambiente: 
-    [cite_start]Crie um arquivo `.env` na raiz do backend e defina as seguintes variáveis[cite: 1]:
+    Crie um arquivo `.env` na raiz do backend e defina as seguintes variáveis:
     - `MONGODB_URI`: Sua string de conexão com o MongoDB Atlas.
     - `SECRET`: Uma chave secreta para a geração de tokens JWT.
-    - [cite_start]`PORT`: A porta em que o servidor backend será executado (ex: 3003)[cite: 1].
+    - `PORT`: A porta em que o servidor backend será executado (ex: 3003).
 
 4. Inicie o servidor de desenvolvimento:
     Backend: `npm run dev` (dentro da pasta do backend)
